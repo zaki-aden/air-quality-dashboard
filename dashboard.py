@@ -218,8 +218,8 @@ WAVELET_LOOKUP = {
 
 def run_prediction(district: str, season_code: str) -> float:
     """Return predicted NO₂ using the real model or a demo fallback.
-    Builds a pure numpy array manually to avoid pandas/numpy
-    conversion issues on Python 3.14 + Streamlit Cloud.
+    Auto-detects whether the old model (9 features) or new wavelet
+    model (12 features) is loaded and builds input accordingly.
     """
     if model_loaded:
         coords  = DISTRICT_COORDS[district]
@@ -240,25 +240,24 @@ def run_prediction(district: str, season_code: str) -> float:
             1.0 if season_code == "MAM" else 0.0,
             1.0 if season_code == "SON" else 0.0,
         ]
-        # numeric: lat, lon, d1, d2, d3
-        numeric = [
-            float(coords["lat"]),
-            float(coords["lon"]),
-            float(wavelet["d1"]),
-            float(wavelet["d2"]),
-            float(wavelet["d3"]),
-        ]
+        numeric_base = [float(coords["lat"]), float(coords["lon"])]
+        numeric_wave = [float(wavelet["d1"]), float(wavelet["d2"]), float(wavelet["d3"])]
 
-        # Build pure numpy array — shape (1, 12) — no pandas involved
-        X = np.array([region_ohe + season_ohe + numeric], dtype=np.float64)
-
-        # Handle both model formats:
-        # New format: sklearn Pipeline with named_steps (Mustafa's new model)
-        # Old format: raw RandomForestRegressor (old model)
+        # Get the actual RF step (works for both Pipeline and raw RF)
         if hasattr(rf_model, "named_steps"):
             rf_step = rf_model.named_steps["rf"]
         else:
             rf_step = rf_model
+
+        # Auto-detect: 9 features = old model, 12 features = new wavelet model
+        n_feat = rf_step.n_features_in_
+        if n_feat == 12:
+            features = region_ohe + season_ohe + numeric_base + numeric_wave
+        else:
+            # Old model: 9 features — no wavelet coefficients
+            features = region_ohe + season_ohe + numeric_base
+
+        X = np.array([features], dtype=np.float64)
         return float(rf_step.predict(X)[0])
     else:
         base          = {"Kartal": 0.000110, "Kağıthane": 0.000125, "Üsküdar": 0.000105}
