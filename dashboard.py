@@ -252,8 +252,13 @@ def run_prediction(district: str, season_code: str) -> float:
         # Build pure numpy array — shape (1, 12) — no pandas involved
         X = np.array([region_ohe + season_ohe + numeric], dtype=np.float64)
 
-        # Predict directly on the RF step (bypass Pipeline entirely)
-        rf_step = rf_model.named_steps["rf"]
+        # Handle both model formats:
+        # New format: sklearn Pipeline with named_steps (Mustafa's new model)
+        # Old format: raw RandomForestRegressor (old model)
+        if hasattr(rf_model, "named_steps"):
+            rf_step = rf_model.named_steps["rf"]
+        else:
+            rf_step = rf_model
         return float(rf_step.predict(X)[0])
     else:
         base          = {"Kartal": 0.000110, "Kağıthane": 0.000125, "Üsküdar": 0.000105}
