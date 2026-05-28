@@ -217,21 +217,34 @@ WAVELET_LOOKUP = {
 }
 
 def run_prediction(district: str, season_code: str) -> float:
-    """Return predicted NO₂ in mol/m² using the real model or a demo fallback."""
+    """Return predicted NO₂ using the real model or a demo fallback."""
     if model_loaded:
         coords  = DISTRICT_COORDS[district]
-        wavelet = WAVELET_LOOKUP.get((district, season_code), {"d1": 0.0, "d2": 0.0, "d3": 0.0})
-        row = pd.DataFrame([{
-            "region_name": district,
-            "season":      season_code,
-            "lat":         coords["lat"],
-            "lon":         coords["lon"],
-            "d1":          wavelet["d1"],
-            "d2":          wavelet["d2"],
-            "d3":          wavelet["d3"],
-        }])
-        # Mustafa's model is a Pipeline — call predict directly
-        return float(rf_model.predict(row)[0])
+        wavelet = WAVELET_LOOKUP.get((district, season_code),
+                                     {"d1": 0.0, "d2": 0.0, "d3": 0.0})
+        try:
+            # Build input row and force clean numpy types to avoid
+            # pandas 3.x / Python 3.14 array conversion issues on Streamlit Cloud
+            row = pd.DataFrame([{
+                "region_name": district,
+                "season":      season_code,
+                "lat":         float(coords["lat"]),
+                "lon":         float(coords["lon"]),
+                "d1":          float(wavelet["d1"]),
+                "d2":          float(wavelet["d2"]),
+                "d3":          float(wavelet["d3"]),
+            }], columns=["region_name", "season", "lat", "lon", "d1", "d2", "d3"])
+
+            # Apply preprocessor step separately, then predict on numpy array
+            preproc = rf_model.named_steps["preproc"]
+            rf_step = rf_model.named_steps["rf"]
+            X_transformed = preproc.transform(row)
+            X_array = np.array(X_transformed, dtype=np.float64)
+            return float(rf_step.predict(X_array)[0])
+
+        except Exception:
+            # Final fallback: direct pipeline call
+            return float(rf_model.predict(row)[0])
     else:
         base          = {"Kartal": 0.000110, "Kağıthane": 0.000125, "Üsküdar": 0.000105}
         season_factor = {"DJF": 1.20, "MAM": 1.05, "JJA": 0.85, "SON": 1.00}
