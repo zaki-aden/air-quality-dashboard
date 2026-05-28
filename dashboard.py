@@ -217,34 +217,44 @@ WAVELET_LOOKUP = {
 }
 
 def run_prediction(district: str, season_code: str) -> float:
-    """Return predicted NO₂ using the real model or a demo fallback."""
+    """Return predicted NO₂ using the real model or a demo fallback.
+    Builds a pure numpy array manually to avoid pandas/numpy
+    conversion issues on Python 3.14 + Streamlit Cloud.
+    """
     if model_loaded:
         coords  = DISTRICT_COORDS[district]
         wavelet = WAVELET_LOOKUP.get((district, season_code),
                                      {"d1": 0.0, "d2": 0.0, "d3": 0.0})
-        try:
-            # Build input row and force clean numpy types to avoid
-            # pandas 3.x / Python 3.14 array conversion issues on Streamlit Cloud
-            row = pd.DataFrame([{
-                "region_name": district,
-                "season":      season_code,
-                "lat":         float(coords["lat"]),
-                "lon":         float(coords["lon"]),
-                "d1":          float(wavelet["d1"]),
-                "d2":          float(wavelet["d2"]),
-                "d3":          float(wavelet["d3"]),
-            }], columns=["region_name", "season", "lat", "lon", "d1", "d2", "d3"])
 
-            # Apply preprocessor step separately, then predict on numpy array
-            preproc = rf_model.named_steps["preproc"]
-            rf_step = rf_model.named_steps["rf"]
-            X_transformed = preproc.transform(row)
-            X_array = np.array(X_transformed, dtype=np.float64)
-            return float(rf_step.predict(X_array)[0])
+        # ── Manual one-hot encoding (matches training order exactly) ──
+        # region_name categories: ['Kartal', 'Kağıthane', 'Üsküdar']
+        region_ohe = [
+            1.0 if district == "Kartal"    else 0.0,
+            1.0 if district == "Kağıthane" else 0.0,
+            1.0 if district == "Üsküdar"   else 0.0,
+        ]
+        # season categories: ['DJF', 'JJA', 'MAM', 'SON']
+        season_ohe = [
+            1.0 if season_code == "DJF" else 0.0,
+            1.0 if season_code == "JJA" else 0.0,
+            1.0 if season_code == "MAM" else 0.0,
+            1.0 if season_code == "SON" else 0.0,
+        ]
+        # numeric: lat, lon, d1, d2, d3
+        numeric = [
+            float(coords["lat"]),
+            float(coords["lon"]),
+            float(wavelet["d1"]),
+            float(wavelet["d2"]),
+            float(wavelet["d3"]),
+        ]
 
-        except Exception:
-            # Final fallback: direct pipeline call
-            return float(rf_model.predict(row)[0])
+        # Build pure numpy array — shape (1, 12) — no pandas involved
+        X = np.array([region_ohe + season_ohe + numeric], dtype=np.float64)
+
+        # Predict directly on the RF step (bypass Pipeline entirely)
+        rf_step = rf_model.named_steps["rf"]
+        return float(rf_step.predict(X)[0])
     else:
         base          = {"Kartal": 0.000110, "Kağıthane": 0.000125, "Üsküdar": 0.000105}
         season_factor = {"DJF": 1.20, "MAM": 1.05, "JJA": 0.85, "SON": 1.00}
