@@ -8,8 +8,8 @@ Author: Graduation Project 2024-25
 Usage: streamlit run dashboard.py
 """
 
-import pickle
 import json
+import joblib
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -185,9 +185,12 @@ def who_sidebar_legend():
 @st.cache_resource
 def load_model():
     try:
-        with open("best_rf_model_ohe.pkl", "rb") as f:
-            saved = pickle.load(f)
-        return saved["model"], saved["preprocessor"], True
+        saved = joblib.load("best_rf_model_ohe.pkl")
+        # Mustafa's new model is a sklearn Pipeline directly
+        if hasattr(saved, 'predict'):
+            return saved, None, True
+        # fallback: old format with dict
+        return saved["model"], saved.get("preprocessor"), True
     except FileNotFoundError:
         return None, None, False
     except Exception as e:
@@ -196,21 +199,42 @@ def load_model():
 
 rf_model, preprocessor, model_loaded = load_model()
 
+# ── Wavelet lookup table (mean d1,d2,d3 per district/season) ──
+# Used to pass correct wavelet features when predicting
+WAVELET_LOOKUP = {
+    ("Kartal",    "DJF"): {"d1": 0.0, "d2": 0.0, "d3": -2.823e-07},
+    ("Kartal",    "JJA"): {"d1": 0.0, "d2": 0.0, "d3": -1.415e-06},
+    ("Kartal",    "MAM"): {"d1": 0.0, "d2": 0.0, "d3":  2.823e-07},
+    ("Kartal",    "SON"): {"d1": 0.0, "d2": 0.0, "d3":  1.415e-06},
+    ("Kağıthane", "DJF"): {"d1": 0.0, "d2": 0.0, "d3":  0.0},
+    ("Kağıthane", "JJA"): {"d1": 0.0, "d2": 0.0, "d3":  0.0},
+    ("Kağıthane", "MAM"): {"d1": 0.0, "d2": 0.0, "d3":  0.0},
+    ("Kağıthane", "SON"): {"d1": 0.0, "d2": 0.0, "d3":  0.0},
+    ("Üsküdar",   "DJF"): {"d1": 0.0, "d2": 0.0, "d3":  0.0},
+    ("Üsküdar",   "JJA"): {"d1": 0.0, "d2": 0.0, "d3":  0.0},
+    ("Üsküdar",   "MAM"): {"d1": 0.0, "d2": 0.0, "d3":  0.0},
+    ("Üsküdar",   "SON"): {"d1": 0.0, "d2": 0.0, "d3":  0.0},
+}
+
 def run_prediction(district: str, season_code: str) -> float:
     """Return predicted NO₂ in mol/m² using the real model or a demo fallback."""
     if model_loaded:
-        coords = DISTRICT_COORDS[district]
+        coords  = DISTRICT_COORDS[district]
+        wavelet = WAVELET_LOOKUP.get((district, season_code), {"d1": 0.0, "d2": 0.0, "d3": 0.0})
         row = pd.DataFrame([{
             "region_name": district,
             "season":      season_code,
             "lat":         coords["lat"],
             "lon":         coords["lon"],
+            "d1":          wavelet["d1"],
+            "d2":          wavelet["d2"],
+            "d3":          wavelet["d3"],
         }])
-        X = preprocessor.transform(row[["region_name", "season", "lat", "lon"]])
-        return float(rf_model.predict(X)[0])
+        # Mustafa's model is a Pipeline — call predict directly
+        return float(rf_model.predict(row)[0])
     else:
-        base           = {"Kartal": 0.000110, "Kağıthane": 0.000125, "Üsküdar": 0.000105}
-        season_factor  = {"DJF": 1.20, "MAM": 1.05, "JJA": 0.85, "SON": 1.00}
+        base          = {"Kartal": 0.000110, "Kağıthane": 0.000125, "Üsküdar": 0.000105}
+        season_factor = {"DJF": 1.20, "MAM": 1.05, "JJA": 0.85, "SON": 1.00}
         return base[district] * season_factor[season_code]
 
 # ─────────────────────────────────────────────
@@ -496,7 +520,7 @@ elif page == "🤖  ML Predictions":
     st.markdown("<h1>🤖 Machine Learning Predictions</h1>", unsafe_allow_html=True)
 
     if model_loaded:
-        st.success("✅ Random Forest model loaded (OHE, R=0.98, R²=0.96, RMSE=2.15×10⁻⁶ mol/m²)")
+        st.success("✅ Random Forest model loaded (OHE + Wavelet features d1/d2/d3 | R²=0.9762, MAE=1.27×10⁻⁶, RMSE=1.85×10⁻⁶ mol/m²)")
     else:
         st.info("ℹ️ Running in demo mode. Place `best_rf_model_ohe.pkl` in the app directory to enable live predictions.")
 
@@ -592,14 +616,14 @@ elif page == "🤖  ML Predictions":
         )
         st.plotly_chart(fig_avp, use_container_width=True)
 
-        # Accuracy metrics (real model metrics, not computed on noise)
+        # Accuracy metrics (updated with wavelet model metrics)
         st.markdown("### 📐 Model Accuracy Metrics")
         m1, m2, m3, m4 = st.columns(4)
         for col, label, value, unit in [
-            (m1, "R (Pearson)", 0.9804, ""),
-            (m2, "R²",         0.9605, ""),
-            (m3, "RMSE",       2.15,   "×10⁻⁶ mol/m²"),
-            (m4, "MAE",        1.67,   "×10⁻⁶ mol/m²"),
+            (m1, "R²",   0.9762, "Overall"),
+            (m2, "MAE",  1.27,   "×10⁻⁶ mol/m²"),
+            (m3, "RMSE", 1.85,   "×10⁻⁶ mol/m²"),
+            (m4, "Features", 7,  "incl. d1/d2/d3"),
         ]:
             col.markdown(f"""
             <div class='accuracy-card'>
@@ -611,6 +635,39 @@ elif page == "🤖  ML Predictions":
             </div>
             """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
+
+        # Seasonal R² breakdown chart
+        st.markdown("### 📊 R² Score by Season (Test Set)")
+        seasonal_r2 = {
+            "DJF (Winter)": 0.6676,
+            "MAM (Spring)": 0.9763,
+            "JJA (Summer)": 0.9605,
+            "SON (Autumn)": 0.9885,
+        }
+        seasonal_colors = ["#534AB7", "#1D9E75", "#EF9F27", "#D85A30"]
+        fig_r2 = go.Figure(go.Bar(
+            x=list(seasonal_r2.keys()),
+            y=list(seasonal_r2.values()),
+            marker_color=seasonal_colors,
+            text=[f"{v:.4f}" for v in seasonal_r2.values()],
+            textposition="outside",
+            hovertemplate="Season: %{x}<br>R²: %{y:.4f}<extra></extra>",
+        ))
+        fig_r2.add_hline(y=0.95, line_dash="dash", line_color="#B0BEC5",
+                         annotation_text="R²=0.95 target", annotation_position="top right")
+        fig_r2.update_layout(
+            title="Per-Season R² — Wavelet-Enhanced Model (n=300, max_depth=15)",
+            yaxis_title="R²", yaxis_range=[0, 1.05],
+            **PLOTLY_LAYOUT,
+        )
+        st.plotly_chart(fig_r2, use_container_width=True)
+        st.markdown(f"""
+        <div class='info-card' style='font-size:12px;'>
+          <b>Note:</b> DJF (Winter) R²=0.667 is lower than other seasons but improved by +0.06 vs baseline.
+          JJA (Summer) regressed slightly (0.985→0.960) — wavelet features hurt Summer slightly.
+          This is worth discussing with the professor.
+        </div>
+        """, unsafe_allow_html=True)
 
         # Download
         results_df = df_dist_pred[["region_name", "season"]].copy()
