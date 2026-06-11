@@ -24,12 +24,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── Global dark theme override ──
+# ── Global dark theme override + animations ──
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Force sidebar to match dark theme */
+/* ── SIDEBAR ── */
 [data-testid="stSidebar"] {
     background-color: #0a1220 !important;
     border-right: 1px solid #1a2e45 !important;
@@ -37,8 +37,6 @@ st.markdown("""
 [data-testid="stSidebar"] > div:first-child {
     background-color: #0a1220 !important;
 }
-
-/* Radio buttons in sidebar */
 [data-testid="stSidebar"] .stRadio label {
     color: #7aaad4 !important;
     font-size: 12px !important;
@@ -47,22 +45,107 @@ st.markdown("""
 [data-testid="stSidebar"] .stRadio label:hover {
     color: #ffffff !important;
 }
-
-/* Main background */
-.stApp {
-    background-color: #0e0e11 !important;
-}
-
-/* Remove default streamlit padding weirdness */
 [data-testid="stSidebar"] .block-container {
     padding-top: 0 !important;
 }
 
-/* Scrollbar dark */
+/* ── MAIN BG ── */
+.stApp { background-color: #0e0e11 !important; }
+
+/* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #0a1220; }
 ::-webkit-scrollbar-thumb { background: #1a3a5c; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #2a5a8c; }
+
+/* ── ANIMATION 1: Earth spin ── */
+@keyframes spin-earth {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.earth-spin {
+    display: inline-block;
+    animation: spin-earth 8s linear infinite;
+    font-size: 36px;
+    line-height: 1;
+}
+
+/* ── ANIMATION 2: Pulsing glow on cards ── */
+@keyframes pulse-green  { 0%,100%{box-shadow:0 0 0 0 #4CAF5044} 50%{box-shadow:0 0 18px 4px #4CAF5033} }
+@keyframes pulse-yellow { 0%,100%{box-shadow:0 0 0 0 #FFC10744} 50%{box-shadow:0 0 18px 4px #FFC10733} }
+@keyframes pulse-orange { 0%,100%{box-shadow:0 0 0 0 #FF980044} 50%{box-shadow:0 0 18px 4px #FF980033} }
+@keyframes pulse-red    { 0%,100%{box-shadow:0 0 0 0 #F4433644} 50%{box-shadow:0 0 18px 4px #F4433633} }
+@keyframes pulse-purple { 0%,100%{box-shadow:0 0 0 0 #9C27B044} 50%{box-shadow:0 0 18px 4px #9C27B033} }
+.pulse-green  { animation: pulse-green  2.5s ease-in-out infinite; }
+.pulse-yellow { animation: pulse-yellow 2.5s ease-in-out infinite; }
+.pulse-orange { animation: pulse-orange 2.5s ease-in-out infinite; }
+.pulse-red    { animation: pulse-red    2.5s ease-in-out infinite; }
+.pulse-purple { animation: pulse-purple 2.5s ease-in-out infinite; }
+
+/* ── ANIMATION 3: Typing effect ── */
+@keyframes typing {
+    from { width: 0; }
+    to   { width: 100%; }
+}
+@keyframes blink-cursor {
+    0%,100% { border-color: transparent; }
+    50%      { border-color: #4a9fd4; }
+}
+.typing-title {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid #4a9fd4;
+    animation: typing 2s steps(35, end) forwards,
+               blink-cursor 0.75s step-end 4;
+    display: inline-block;
+    max-width: 100%;
+}
+
+/* ── ANIMATION 4: Blinking live dot ── */
+@keyframes blink-live {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.3; transform: scale(0.85); }
+}
+.live-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #00e676;
+    animation: blink-live 1.4s ease-in-out infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+/* ── ANIMATION 5: Fade-in on page load ── */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+}
+
+/* ── ANIMATION 6: Counter shimmer sweep ── */
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.shimmer {
+    background: linear-gradient(90deg, #161618 25%, #1e2a3a 50%, #161618 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+    height: 20px;
+}
+
+/* ── Number counter ── */
+.counter-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: #7ec8f7;
+    line-height: 1;
+    font-family: 'Inter', sans-serif;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -430,8 +513,8 @@ letter-spacing:2px; line-height:1.4; margin-top:6px;'>AIR QUALITY<br>MONITORING<
     if model_loaded:
         st.markdown("""
 <div style='background:#0a2a1a; border:1px solid #1a5a2a; border-radius:8px;
-padding:8px 10px; display:flex; align-items:center; gap:6px; margin-bottom:12px;'>
-<span style='font-size:13px;'>✅</span>
+padding:8px 10px; display:flex; align-items:center; gap:4px; margin-bottom:12px;'>
+<span class='live-dot'></span>
 <span style='font-size:10px; color:#4aaa6a; font-weight:600;'>Model loaded (OHE)</span>
 </div>""", unsafe_allow_html=True)
     else:
@@ -482,11 +565,14 @@ margin-bottom:12px; text-transform:uppercase;'>WHO NO₂ Levels (µmol/m²)</div
 # ── PAGE 1: HOME ──
 if page == "🏠 Home":
     st.markdown(f"""
+<div class='fade-in'>
 <h1 style='font-size:32px; font-weight:800; margin-bottom:4px;'>
-<span class='earth-spin'>🌍</span> Air Quality Monitoring Dashboard
+<span class='earth-spin'>🌍</span>
+<span class='typing-title'>Air Quality Monitoring Dashboard</span>
 </h1>
 <div style='color:{COLORS["soft_gray"]}; font-size:15px; margin-bottom:24px;'>
 NO2 Prediction for Istanbul Districts using Machine Learning & Satellite Data (Sentinel-5P)
+</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -514,8 +600,17 @@ NO2 Prediction for Istanbul Districts using Machine Learning & Satellite Data (S
         lvl = who_level(val_umol)
         seasonal_mean = SEASONAL_MEANS.get(district, {}).get(current_season, val)
         seasonal_mean_umol = seasonal_mean * 1e6
+        # Map WHO color to pulse class
+        pulse_map = {
+            "#4CAF50": "pulse-green",
+            "#FFC107": "pulse-yellow",
+            "#FF9800": "pulse-orange",
+            "#F44336": "pulse-red",
+            "#9C27B0": "pulse-purple",
+        }
+        pulse_cls = pulse_map.get(lvl["color"], "pulse-orange")
         col.markdown(f"""
-<div style='background:linear-gradient(135deg,{COLORS["mid_blue"]},{COLORS["dark_blue"]});
+<div class='fade-in {pulse_cls}' style='background:linear-gradient(135deg,{COLORS["mid_blue"]},{COLORS["dark_blue"]});
 border:1px solid {COLORS["mid_blue"]}; border-top:2px solid {lvl["color"]};
 border-radius:14px; overflow:hidden;'>
 <div style='padding:16px 16px 12px 16px;'>
