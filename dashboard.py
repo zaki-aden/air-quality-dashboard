@@ -483,7 +483,7 @@ margin-bottom:12px; text-transform:uppercase;'>WHO NO₂ Levels (µmol/m²)</div
 if page == "🏠 Home":
     st.markdown(f"""
 <h1 style='font-size:32px; font-weight:800; margin-bottom:4px;'>
-🌍 Air Quality Monitoring Dashboard
+<span class='earth-spin'>🌍</span> Air Quality Monitoring Dashboard
 </h1>
 <div style='color:{COLORS["soft_gray"]}; font-size:15px; margin-bottom:24px;'>
 NO2 Prediction for Istanbul Districts using Machine Learning & Satellite Data (Sentinel-5P)
@@ -503,7 +503,7 @@ NO2 Prediction for Istanbul Districts using Machine Learning & Satellite Data (S
         rev = {v: k for k, v in SEASON_NAME.items()}
         df_home = df_home[df_home["season"] == rev[selected_season_home]]
 
-    st.markdown("### 📡 Current NO₂ Levels")
+    st.markdown("### 📡 Observed NO₂ Levels — Sentinel-5P Seasonal Dataset")
     latest = get_latest_no2(df_all)
     current_season = get_current_season()
 
