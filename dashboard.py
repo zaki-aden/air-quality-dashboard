@@ -398,10 +398,22 @@ def line_chart_no2(df: pd.DataFrame, title: str = "NO2 by Season") -> go.Figure:
 # ── SIDEBAR ──
 with st.sidebar:
     st.markdown(f"""
+<style>
+@keyframes spin-earth {{
+    0%   {{ transform: rotate(0deg); }}
+    100% {{ transform: rotate(360deg); }}
+}}
+.earth-spin {{
+    display: inline-block;
+    animation: spin-earth 8s linear infinite;
+    font-size: 36px;
+    line-height: 1;
+}}
+</style>
 <div style='text-align:center; padding:16px 0 12px 0; border-bottom:1px solid #1a2e45; margin-bottom:12px;'>
-<div style='font-size:32px; margin-bottom:4px;'>🌍</div>
+<div class='earth-spin'>🌍</div>
 <div style='font-size:12px; font-weight:700; color:{COLORS["sky_blue"]};
-letter-spacing:2px; line-height:1.4;'>AIR QUALITY<br>MONITORING</div>
+letter-spacing:2px; line-height:1.4; margin-top:6px;'>AIR QUALITY<br>MONITORING</div>
 <div style='font-size:10px; color:#2a5a7a; margin-top:3px;'>Istanbul · Sentinel-5P</div>
 </div>
 """, unsafe_allow_html=True)
