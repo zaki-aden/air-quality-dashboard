@@ -876,16 +876,19 @@ elderly people over 65, pregnant women, and individuals with respiratory or card
     pc1, pc2, pc3 = st.columns(3)
     for col, district in zip([pc1, pc2, pc3], DISTRICTS):
         p = pop_data[district]
+        total_fmt = f"{p['total']:,}"
+        sensitive_fmt = f"{p['sensitive']:,}"
+        general_fmt = f"{p['general']:,}"
         col.markdown(f"""
 <div style='background:linear-gradient(135deg,{COLORS["mid_blue"]},{COLORS["dark_blue"]});
 border:2px solid {COLORS["sky_blue"]}55; border-radius:14px; padding:14px; text-align:center;'>
 <div style='font-size:13px; color:{COLORS["soft_gray"]}; margin-bottom:4px;'>{district}</div>
 <div style='font-size:20px; font-weight:800; color:{COLORS["sky_blue"]};'>
-{{p["total"]:,}}</div>
+{total_fmt}</div>
 <div style='font-size:11px; color:{COLORS["soft_gray"]}; margin-bottom:6px;'>Total residents</div>
-<div style='font-size:13px; color:#F44336; font-weight:700;'>{{p["sensitive"]:,}} sensitive</div>
+<div style='font-size:13px; color:#F44336; font-weight:700;'>{sensitive_fmt} sensitive</div>
 <div style='font-size:11px; color:{COLORS["soft_gray"]}; margin-bottom:4px;'>children, elderly, respiratory patients</div>
-<div style='font-size:13px; color:#4CAF50; font-weight:700;'>{{p["general"]:,}} general</div>
+<div style='font-size:13px; color:#4CAF50; font-weight:700;'>{general_fmt} general</div>
 <div style='font-size:11px; color:{COLORS["soft_gray"]};'>rest of population</div>
 </div>
 """, unsafe_allow_html=True)
@@ -987,17 +990,19 @@ border:2px solid #F4433688; border-radius:14px; padding:18px; text-align:center;
     total_sensitive = sum(pop_data[d]["sensitive"] for d in DISTRICTS)
     total_general = sum(pop_data[d]["general"] for d in DISTRICTS)
     col_t1, col_t2 = st.columns(2)
+    ts_fmt = f"{total_sensitive:,}"
+    tg_fmt = f"{total_general:,}"
     col_t1.markdown(f"""
 <div style='background:#F4433622; border:2px solid #F44336; border-radius:12px; padding:16px; text-align:center;'>
 <div style='font-size:12px; color:{COLORS["soft_gray"]}; margin-bottom:4px;'>Sensitive people across all 3 districts</div>
-<div style='font-size:32px; font-weight:800; color:#F44336;'>{total_sensitive:,}</div>
+<div style='font-size:32px; font-weight:800; color:#F44336;'>{ts_fmt}</div>
 <div style='font-size:11px; color:{COLORS["soft_gray"]};'>at risk on a typical winter day</div>
 </div>
 """, unsafe_allow_html=True)
     col_t2.markdown(f"""
 <div style='background:#FF980022; border:2px solid #FF9800; border-radius:12px; padding:16px; text-align:center;'>
 <div style='font-size:12px; color:{COLORS["soft_gray"]}; margin-bottom:4px;'>General population across all 3 districts</div>
-<div style='font-size:32px; font-weight:800; color:#FF9800;'>{total_general:,}</div>
+<div style='font-size:32px; font-weight:800; color:#FF9800;'>{tg_fmt}</div>
 <div style='font-size:11px; color:{COLORS["soft_gray"]};'>exposed to unhealthy air on a typical winter day</div>
 </div>
 """, unsafe_allow_html=True)
