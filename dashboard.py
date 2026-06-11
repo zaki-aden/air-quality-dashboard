@@ -426,39 +426,45 @@ padding:8px 10px; display:flex; align-items:center; gap:6px; margin-bottom:12px;
         st.info("ℹ️ Demo mode")
 
     st.markdown("""
-<div style='font-size:9px; font-weight:700; color:#4a9fd4; letter-spacing:1px;
-margin-bottom:8px; text-transform:uppercase;'>WHO NO₂ Levels (µmol/m²)</div>
+<div style='font-size:12px; font-weight:700; color:#4a9fd4; letter-spacing:1px;
+margin-bottom:12px; text-transform:uppercase;'>WHO NO₂ Levels (µmol/m²)</div>
 <div style='display:flex; flex-direction:column; gap:0px;'>
-<div style='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #0e1e2e;'>
-<div style='width:7px;height:7px;border-radius:50%;background:#4CAF50;flex-shrink:0;'></div>
-<div style='font-size:9px;color:#4CAF50;flex:1;'>Good</div>
-<div style='font-size:8px;color:#2a4a6a;'>&lt;54</div></div>
-<div style='font-size:8px;color:#2a4a2a;padding:1px 0 4px 13px;'>0–10.8 µg/m³</div>
-<div style='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #0e1e2e;'>
-<div style='width:7px;height:7px;border-radius:50%;background:#FFC107;flex-shrink:0;'></div>
-<div style='font-size:9px;color:#FFC107;flex:1;'>Moderate</div>
-<div style='font-size:8px;color:#2a4a6a;'>54–90</div></div>
-<div style='font-size:8px;color:#3a3a00;padding:1px 0 4px 13px;'>10.8–18 µg/m³</div>
-<div style='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #0e1e2e;'>
-<div style='width:7px;height:7px;border-radius:50%;background:#FF9800;flex-shrink:0;'></div>
-<div style='font-size:9px;color:#FF9800;flex:1;'>Sensitive Groups</div>
-<div style='font-size:8px;color:#2a4a6a;'>90–120</div></div>
-<div style='font-size:8px;color:#3a2000;padding:1px 0 4px 13px;'>18–24 µg/m³</div>
-<div style='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #0e1e2e;'>
-<div style='width:7px;height:7px;border-radius:50%;background:#F44336;flex-shrink:0;'></div>
-<div style='font-size:9px;color:#F44336;flex:1;'>Unhealthy</div>
-<div style='font-size:8px;color:#2a4a6a;'>120–160</div></div>
-<div style='font-size:8px;color:#3a0a0a;padding:1px 0 4px 13px;'>24–32 µg/m³</div>
-<div style='display:flex;align-items:center;gap:6px;padding:4px 0;'>
-<div style='width:7px;height:7px;border-radius:50%;background:#9C27B0;flex-shrink:0;'></div>
-<div style='font-size:9px;color:#9C27B0;flex:1;'>Very Unhealthy</div>
-<div style='font-size:8px;color:#2a4a6a;'>&gt;160</div></div>
-<div style='font-size:8px;color:#2a0a3a;padding:1px 0 4px 13px;'>&gt;32 µg/m³ · Sensitive avoid outdoor</div>
+
+<div style='display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #1a2e3a;'>
+<div style='width:10px;height:10px;border-radius:50%;background:#4CAF50;flex-shrink:0;'></div>
+<div style='font-size:12px;color:#4CAF50;flex:1;font-weight:500;'>Good</div>
+<div style='font-size:11px;color:#4a7aaa;'>&lt;54</div></div>
+<div style='font-size:11px;color:#2a5a2a;padding:2px 0 6px 18px;'>0–10.8 µg/m³</div>
+
+<div style='display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #1a2e3a;'>
+<div style='width:10px;height:10px;border-radius:50%;background:#FFC107;flex-shrink:0;'></div>
+<div style='font-size:12px;color:#FFC107;flex:1;font-weight:500;'>Moderate</div>
+<div style='font-size:11px;color:#4a7aaa;'>54–90</div></div>
+<div style='font-size:11px;color:#4a4a00;padding:2px 0 6px 18px;'>10.8–18 µg/m³</div>
+
+<div style='display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #1a2e3a;'>
+<div style='width:10px;height:10px;border-radius:50%;background:#FF9800;flex-shrink:0;'></div>
+<div style='font-size:12px;color:#FF9800;flex:1;font-weight:500;'>Sensitive Groups</div>
+<div style='font-size:11px;color:#4a7aaa;'>90–120</div></div>
+<div style='font-size:11px;color:#4a3000;padding:2px 0 6px 18px;'>18–24 µg/m³</div>
+
+<div style='display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #1a2e3a;'>
+<div style='width:10px;height:10px;border-radius:50%;background:#F44336;flex-shrink:0;'></div>
+<div style='font-size:12px;color:#F44336;flex:1;font-weight:500;'>Unhealthy</div>
+<div style='font-size:11px;color:#4a7aaa;'>120–160</div></div>
+<div style='font-size:11px;color:#4a1010;padding:2px 0 6px 18px;'>24–32 µg/m³</div>
+
+<div style='display:flex;align-items:center;gap:8px;padding:7px 0;'>
+<div style='width:10px;height:10px;border-radius:50%;background:#9C27B0;flex-shrink:0;'></div>
+<div style='font-size:12px;color:#9C27B0;flex:1;font-weight:500;'>Very Unhealthy</div>
+<div style='font-size:11px;color:#4a7aaa;'>&gt;160</div></div>
+<div style='font-size:11px;color:#3a1a4a;padding:2px 0 4px 18px;'>&gt;32 µg/m³ · Sensitive avoid outdoor</div>
+
 </div>
-<hr style='border-color:#0e1e2e; margin:10px 0 8px 0;'>
-<div style='font-size:9px;color:#1a3a4a;margin-bottom:2px;'>🛰️ Sentinel-5P / GEE</div>
-<div style='font-size:9px;color:#1a3a4a;margin-bottom:2px;'>🤖 Random Forest (.pkl)</div>
-<div style='font-size:9px;color:#1a3a4a;'>🎓 Graduation Project 2024-25</div>
+<hr style='border-color:#1a2e3a; margin:14px 0 10px 0;'>
+<div style='font-size:11px;color:#2a5a7a;margin-bottom:4px;'>🛰️ Sentinel-5P / GEE</div>
+<div style='font-size:11px;color:#2a5a7a;margin-bottom:4px;'>🤖 Random Forest (.pkl)</div>
+<div style='font-size:11px;color:#2a5a7a;'>🎓 Graduation Project 2024-25</div>
 """, unsafe_allow_html=True)
 
 # ── PAGE 1: HOME ──
