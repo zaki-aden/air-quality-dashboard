@@ -113,19 +113,19 @@ PLOTLY_LAYOUT = dict(
 # converted proportionally from the WHO surface concentration guidelines
 
 WHO_LEVELS = [
-    {"tier": "Good",                        "max": 0.054,         "color": "#4CAF50", "bg": "#1a3a1a",
+    {"tier": "Good",                        "max": 54.0,          "color": "#4CAF50", "bg": "#1a3a1a",
      "note": "Below WHO annual guideline (10 µg/m³)",
-     "ug_range": "0.000–10.8 µg/m³ equivalent",
+     "ug_range": "0.0–10.8 µg/m³ equivalent",
      "advice": "Air quality is satisfactory. No health risk for any population group."},
-    {"tier": "Moderate",                    "max": 0.090,         "color": "#FFC107", "bg": "#3a2e00",
+    {"tier": "Moderate",                    "max": 90.0,          "color": "#FFC107", "bg": "#3a2e00",
      "note": "Approaching WHO 24-hour guideline (25 µg/m³)",
      "ug_range": "10.8–18.0 µg/m³ equivalent",
      "advice": "Acceptable. Unusually sensitive individuals may consider limiting prolonged outdoor exposure."},
-    {"tier": "Unhealthy — Sensitive Groups","max": 0.120,         "color": "#FF9800", "bg": "#3a2000",
+    {"tier": "Unhealthy — Sensitive Groups","max": 120.0,         "color": "#FF9800", "bg": "#3a2000",
      "note": "Exceeds WHO 24-hour guideline — sensitive groups at risk",
      "ug_range": "18.0–24.0 µg/m³ equivalent",
      "advice": "Children, elderly and people with respiratory or cardiovascular conditions should reduce outdoor activity. General public not likely affected."},
-    {"tier": "Unhealthy",                   "max": 0.160,         "color": "#F44336", "bg": "#3a0a0a",
+    {"tier": "Unhealthy",                   "max": 160.0,         "color": "#F44336", "bg": "#3a0a0a",
      "note": "Significantly exceeds WHO guideline — general public at risk",
      "ug_range": "24.0–32.0 µg/m³ equivalent",
      "advice": "Everyone may begin to experience health effects. Sensitive groups should avoid outdoor activity."},
@@ -424,19 +424,25 @@ NO2 Prediction for Istanbul Districts using Machine Learning & Satellite Data (S
         seasonal_mean_umol = seasonal_mean * 1e6
         col.markdown(f"""
 <div style='background:linear-gradient(135deg,{COLORS["mid_blue"]},{COLORS["dark_blue"]});
-border:2px solid {lvl["color"]}88; border-radius:14px; padding:18px; text-align:center;'>
-<div style='font-size:13px; color:{COLORS["soft_gray"]}; margin-bottom:4px;'>{district}</div>
-<div style='font-size:26px; font-weight:800; color:{COLORS["sky_blue"]};'>
+border:1px solid {COLORS["mid_blue"]}; border-top:2px solid {lvl["color"]};
+border-radius:14px; overflow:hidden;'>
+<div style='padding:16px 16px 12px 16px;'>
+<div style='font-size:11px; color:{COLORS["soft_gray"]}88; margin-bottom:6px; letter-spacing:0.5px;'>{district}</div>
+<div style='font-size:28px; font-weight:800; color:{COLORS["sky_blue"]}; line-height:1;'>
         {val_umol:.5f}</div>
-<div style='font-size:12px; color:{COLORS["soft_gray"]}; margin-bottom:4px;'>µmol/m²</div>
-<div style='font-size:11px; color:{COLORS["soft_gray"]}88; margin-bottom:8px;'>
+<div style='font-size:11px; color:{COLORS["soft_gray"]}55; margin-top:2px;'>µmol/m²</div>
+<div style='font-size:10px; color:{COLORS["soft_gray"]}44; margin-top:4px;'>
 Seasonal mean ({SEASON_NAME[current_season]}): {seasonal_mean_umol:.5f} µmol/m²
 </div>
-<div style='display:inline-block; background:{lvl["color"]}; color:#fff;
-font-size:12px; font-weight:700; padding:4px 12px; border-radius:20px;'>
-        {lvl["tier"]}</div>
-<div style='font-size:10px; color:{COLORS["soft_gray"]}; margin-top:6px;'>
-        {lvl["ug_range"]}</div>
+</div>
+<div style='background:{lvl["color"]}18; border-top:1px solid {lvl["color"]}33;
+padding:6px 16px; display:flex; align-items:center; justify-content:space-between;'>
+<div style='display:flex; align-items:center; gap:5px;'>
+<span style='width:5px; height:5px; border-radius:50%; background:{lvl["color"]}; display:inline-block;'></span>
+<span style='font-size:10px; color:{lvl["color"]}; font-weight:600;'>{lvl["tier"]}</span>
+</div>
+<span style='font-size:9px; color:{COLORS["soft_gray"]}44;'>{lvl["ug_range"]}</span>
+</div>
 </div>
 """, unsafe_allow_html=True)
 
