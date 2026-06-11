@@ -567,8 +567,7 @@ if page == "🏠 Home":
     st.markdown(f"""
 <div class='fade-in'>
 <h1 style='font-size:32px; font-weight:800; margin-bottom:4px;'>
-<span class='earth-spin'>🌍</span>
-<span class='typing-title'>Air Quality Monitoring Dashboard</span>
+<span class='earth-spin'>🌍</span> Air Quality Monitoring Dashboard
 </h1>
 <div style='color:{COLORS["soft_gray"]}; font-size:15px; margin-bottom:24px;'>
 NO2 Prediction for Istanbul Districts using Machine Learning & Satellite Data (Sentinel-5P)
@@ -950,14 +949,14 @@ border:2px solid #F4433688; border-radius:14px; padding:18px; text-align:center;
             rows_data.append({
                 "District": district, "Season": label, "Group": "Sensitive",
                 "Critical Days": critical_days[district][season_code],
-                "People Affected": pop_data[district]["sensitive"],
-                "% of Season": round((critical_days[district][season_code] / season_days[season_code]) * 100, 1),
+                "People Affected": f"{pop_data[district]['sensitive']:,}",
+                "% of Season": f"{round((critical_days[district][season_code] / season_days[season_code]) * 100, 1)}%",
             })
             rows_data.append({
                 "District": district, "Season": label, "Group": "General Population",
                 "Critical Days": critical_days_general[district][season_code],
-                "People Affected": pop_data[district]["general"],
-                "% of Season": round((critical_days_general[district][season_code] / season_days[season_code]) * 100, 1),
+                "People Affected": f"{pop_data[district]['general']:,}",
+                "% of Season": f"{round((critical_days_general[district][season_code] / season_days[season_code]) * 100, 1)}%",
             })
     df_crit = pd.DataFrame(rows_data)
 
@@ -967,11 +966,10 @@ border:2px solid #F4433688; border-radius:14px; padding:18px; text-align:center;
         fig_s = px.bar(df_s, x="Season", y="Critical Days", color="District",
                        barmode="group", color_discrete_map=DISTRICT_COLORS, text="Critical Days",
                        labels={"Critical Days": "Critical Days (Sensitive Groups)"})
-        fig_s.update_layout(title=f"Critical Days — Sensitive Groups (children, elderly, respiratory patients)",
+        fig_s.update_layout(title="Critical Days — Sensitive Groups (children, elderly, respiratory patients)",
                             **PLOTLY_LAYOUT)
         st.plotly_chart(fig_s, use_container_width=True)
-        st.dataframe(df_s[["District","Season","Critical Days","People Affected","% of Season"]]
-                     .style.background_gradient(subset=["Critical Days","% of Season"], cmap="Reds"),
+        st.dataframe(df_s[["District","Season","Critical Days","People Affected","% of Season"]],
                      use_container_width=True, hide_index=True)
     with tab2:
         df_g = df_crit[df_crit["Group"] == "General Population"]
@@ -981,8 +979,7 @@ border:2px solid #F4433688; border-radius:14px; padding:18px; text-align:center;
         fig_g.update_layout(title="Critical Days — General Population",
                             **PLOTLY_LAYOUT)
         st.plotly_chart(fig_g, use_container_width=True)
-        st.dataframe(df_g[["District","Season","Critical Days","People Affected","% of Season"]]
-                     .style.background_gradient(subset=["Critical Days","% of Season"], cmap="Oranges"),
+        st.dataframe(df_g[["District","Season","Critical Days","People Affected","% of Season"]],
                      use_container_width=True, hide_index=True)
 
     st.markdown("### 📊 Combined Population Impact Summary")
