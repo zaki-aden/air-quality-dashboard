@@ -24,6 +24,48 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# ── Global dark theme override ──
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Force sidebar to match dark theme */
+[data-testid="stSidebar"] {
+    background-color: #0a1220 !important;
+    border-right: 1px solid #1a2e45 !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    background-color: #0a1220 !important;
+}
+
+/* Radio buttons in sidebar */
+[data-testid="stSidebar"] .stRadio label {
+    color: #7aaad4 !important;
+    font-size: 12px !important;
+    font-family: 'Inter', sans-serif !important;
+}
+[data-testid="stSidebar"] .stRadio label:hover {
+    color: #ffffff !important;
+}
+
+/* Main background */
+.stApp {
+    background-color: #0e0e11 !important;
+}
+
+/* Remove default streamlit padding weirdness */
+[data-testid="stSidebar"] .block-container {
+    padding-top: 0 !important;
+}
+
+/* Scrollbar dark */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a1220; }
+::-webkit-scrollbar-thumb { background: #1a3a5c; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a5a8c; }
+</style>
+""", unsafe_allow_html=True)
+
 COLORS = {
     "dark_blue": "#0D1B2A",
     "mid_blue": "#1B3A5C",
