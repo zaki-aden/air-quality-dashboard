@@ -356,14 +356,12 @@ def line_chart_no2(df: pd.DataFrame, title: str = "NO2 by Season") -> go.Figure:
 # ── SIDEBAR ──
 with st.sidebar:
     st.markdown(f"""
-<div style='text-align:center; padding:16px 0 8px 0;'>
-<div style='font-size:36px;'>🌍</div>
-<div style='font-size:14px; font-weight:700; color:{COLORS["sky_blue"]};
-letter-spacing:1px; margin-top:4px;'>AIR QUALITY<br>MONITORING</div>
-<div style='font-size:11px; color:{COLORS["soft_gray"]}; margin-top:2px;'>
-Istanbul • Sentinel-5P</div>
+<div style='text-align:center; padding:16px 0 12px 0; border-bottom:1px solid #1a2e45; margin-bottom:12px;'>
+<div style='font-size:32px; margin-bottom:4px;'>🌍</div>
+<div style='font-size:12px; font-weight:700; color:{COLORS["sky_blue"]};
+letter-spacing:2px; line-height:1.4;'>AIR QUALITY<br>MONITORING</div>
+<div style='font-size:10px; color:#2a5a7a; margin-top:3px;'>Istanbul · Sentinel-5P</div>
 </div>
-<hr style='border-color:{COLORS["sky_blue"]}44; margin:8px 0 16px 0;'>
 """, unsafe_allow_html=True)
 
     page = st.radio(
@@ -373,19 +371,53 @@ Istanbul • Sentinel-5P</div>
         label_visibility="collapsed",
     )
 
-    st.markdown(f"<hr style='border-color:{COLORS['mid_blue']}; margin:16px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border-color:#1a2e45; margin:12px 0;'>", unsafe_allow_html=True)
 
     if model_loaded:
-        st.success("✅ Model loaded (OHE)")
+        st.markdown("""
+<div style='background:#0a2a1a; border:1px solid #1a5a2a; border-radius:8px;
+padding:8px 10px; display:flex; align-items:center; gap:6px; margin-bottom:12px;'>
+<span style='font-size:13px;'>✅</span>
+<span style='font-size:10px; color:#4aaa6a; font-weight:600;'>Model loaded (OHE)</span>
+</div>""", unsafe_allow_html=True)
     else:
-        st.info("ℹ️ Demo mode — place best_rf_model_ohe.pkl here")
+        st.info("ℹ️ Demo mode")
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    who_sidebar_legend()
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.caption("🛰️ Data: Sentinel-5P / Google Earth Engine")
-    st.caption("🤖 Model: Random Forest (.pkl)")
-    st.caption("🎓 Graduation Project 2024-25")
+    st.markdown("""
+<div style='font-size:9px; font-weight:700; color:#4a9fd4; letter-spacing:1px;
+margin-bottom:8px; text-transform:uppercase;'>WHO NO₂ Levels (µmol/m²)</div>
+<div style='display:flex; flex-direction:column; gap:0px;'>
+<div style='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #0e1e2e;'>
+<div style='width:7px;height:7px;border-radius:50%;background:#4CAF50;flex-shrink:0;'></div>
+<div style='font-size:9px;color:#4CAF50;flex:1;'>Good</div>
+<div style='font-size:8px;color:#2a4a6a;'>&lt;54</div></div>
+<div style='font-size:8px;color:#2a4a2a;padding:1px 0 4px 13px;'>0–10.8 µg/m³</div>
+<div style='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #0e1e2e;'>
+<div style='width:7px;height:7px;border-radius:50%;background:#FFC107;flex-shrink:0;'></div>
+<div style='font-size:9px;color:#FFC107;flex:1;'>Moderate</div>
+<div style='font-size:8px;color:#2a4a6a;'>54–90</div></div>
+<div style='font-size:8px;color:#3a3a00;padding:1px 0 4px 13px;'>10.8–18 µg/m³</div>
+<div style='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #0e1e2e;'>
+<div style='width:7px;height:7px;border-radius:50%;background:#FF9800;flex-shrink:0;'></div>
+<div style='font-size:9px;color:#FF9800;flex:1;'>Sensitive Groups</div>
+<div style='font-size:8px;color:#2a4a6a;'>90–120</div></div>
+<div style='font-size:8px;color:#3a2000;padding:1px 0 4px 13px;'>18–24 µg/m³</div>
+<div style='display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #0e1e2e;'>
+<div style='width:7px;height:7px;border-radius:50%;background:#F44336;flex-shrink:0;'></div>
+<div style='font-size:9px;color:#F44336;flex:1;'>Unhealthy</div>
+<div style='font-size:8px;color:#2a4a6a;'>120–160</div></div>
+<div style='font-size:8px;color:#3a0a0a;padding:1px 0 4px 13px;'>24–32 µg/m³</div>
+<div style='display:flex;align-items:center;gap:6px;padding:4px 0;'>
+<div style='width:7px;height:7px;border-radius:50%;background:#9C27B0;flex-shrink:0;'></div>
+<div style='font-size:9px;color:#9C27B0;flex:1;'>Very Unhealthy</div>
+<div style='font-size:8px;color:#2a4a6a;'>&gt;160</div></div>
+<div style='font-size:8px;color:#2a0a3a;padding:1px 0 4px 13px;'>&gt;32 µg/m³ · Sensitive avoid outdoor</div>
+</div>
+<hr style='border-color:#0e1e2e; margin:10px 0 8px 0;'>
+<div style='font-size:9px;color:#1a3a4a;margin-bottom:2px;'>🛰️ Sentinel-5P / GEE</div>
+<div style='font-size:9px;color:#1a3a4a;margin-bottom:2px;'>🤖 Random Forest (.pkl)</div>
+<div style='font-size:9px;color:#1a3a4a;'>🎓 Graduation Project 2024-25</div>
+""", unsafe_allow_html=True)
 
 # ── PAGE 1: HOME ──
 if page == "🏠 Home":
@@ -437,11 +469,11 @@ Seasonal mean ({SEASON_NAME[current_season]}): {seasonal_mean_umol:.5f} µmol/m�
 </div>
 <div style='background:{lvl["color"]}18; border-top:1px solid {lvl["color"]}33;
 padding:6px 16px; display:flex; align-items:center; justify-content:space-between;'>
-<div style='display:flex; align-items:center; gap:5px;'>
-<span style='width:5px; height:5px; border-radius:50%; background:{lvl["color"]}; display:inline-block;'></span>
-<span style='font-size:10px; color:{lvl["color"]}; font-weight:600;'>{lvl["tier"]}</span>
+<div style='display:flex; align-items:center; gap:5px; overflow:hidden;'>
+<span style='width:5px; height:5px; border-radius:50%; background:{lvl["color"]}; display:inline-block; flex-shrink:0;'></span>
+<span style='font-size:9px; color:{lvl["color"]}; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>{lvl["tier"]}</span>
 </div>
-<span style='font-size:9px; color:{COLORS["soft_gray"]}44;'>{lvl["ug_range"]}</span>
+<span style='font-size:8px; color:{COLORS["soft_gray"]}44; white-space:nowrap;'>{lvl["ug_range"]}</span>
 </div>
 </div>
 """, unsafe_allow_html=True)
